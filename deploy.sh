@@ -20,11 +20,22 @@ gcloud functions deploy runMonthlyMatching \
   --set-env-vars BUBBLE_API_KEY=$BUBBLE_API_KEY,BUBBLE_APP_NAME=$BUBBLE_APP_NAME,GCP_PROJECT_ID=$GCP_PROJECT_ID \
   --allow-unauthenticated
 
-# Deploy the individual user processor
+# Deploy the individual user processor (HTTP endpoint for Bubble.io)
 gcloud functions deploy processUser \
   --runtime nodejs18 \
-  --trigger-topic user-matching \
+  --trigger-http \
   --entry-point processUser \
+  --source ./functions \
+  --memory 256MB \
+  --timeout 60s \
+  --set-env-vars BUBBLE_API_KEY=$BUBBLE_API_KEY,BUBBLE_APP_NAME=$BUBBLE_APP_NAME,GCP_PROJECT_ID=$GCP_PROJECT_ID \
+  --allow-unauthenticated
+
+# Deploy the individual user processor (Pub/Sub trigger)
+gcloud functions deploy processUserPubSub \
+  --runtime nodejs18 \
+  --trigger-topic user-matching \
+  --entry-point processUserPubSub \
   --source ./functions \
   --memory 256MB \
   --timeout 60s \

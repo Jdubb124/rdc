@@ -66,8 +66,76 @@ exports.runMonthlyMatching = async (req, res) => {
   }
 };
 
-// Process individual user (can be triggered separately for real-time updates)
-exports.processUser = async (message, context) => {
+// Process individual user (HTTP endpoint for Bubble.io API Connector)
+exports.processUser = async (req, res) => {
+  console.log('processUser endpoint called');
+  
+  let userId;
+  
+  // Support both GET and POST requests
+  if (req.method === 'POST') {
+    userId = req.body?.userId;
+  } else if (req.method === 'GET') {
+    userId = req.query?.userId;
+  }
+  
+  if (!userId) {
+    res.status(400).json({ 
+      success: false, 
+      error: 'Missing userId parameter' 
+    });
+    return;
+  }
+  
+  console.log(`Processing user: ${userId}`);
+  
+  try {
+    // Fetch user data
+    const userResponse = await bubbleService.fetchUsers(0, 1);
+    const user = userResponse.results[0];
+    
+    // Fetch user's neighborhood restaurants
+    const restaurants = await bubbleService.fetchRestaurants(user.neighborhood);
+    
+    // Fetch visit history
+    const visitHistory = await bubbleService.fetchUserVisits(userId);
+    
+    // Calculate matches
+    const matches = await matchingEngine.getTopMatches(
+      user, 
+      restaurants, 
+      visitHistory
+    );
+    
+    // Create offers
+    const offers = await createOffers(userId, matches);
+    
+    // Store results
+    await firestoreService.storeMatchingResults(userId, offers);
+    
+    console.log(`Processed user ${userId}: ${offers.length} offers created`);
+    
+    // Return success response for Bubble.io
+    res.status(200).json({ 
+      success: true,
+      userId: userId,
+      matches: matches.length,
+      offers: offers.length,
+      data: offers
+    });
+    
+  } catch (error) {
+    console.error(`Error processing user ${userId}:`, error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      userId: userId
+    });
+  }
+};
+
+// Process user via Pub/Sub (legacy trigger)
+exports.processUserPubSub = async (message, context) => {
   const userId = message.data 
     ? JSON.parse(Buffer.from(message.data, 'base64').toString()).userId 
     : null;
@@ -77,7 +145,7 @@ exports.processUser = async (message, context) => {
     return;
   }
   
-  console.log(`Processing user: ${userId}`);
+  console.log(`Processing user via Pub/Sub: ${userId}`);
   
   try {
     // Fetch user data
