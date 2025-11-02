@@ -5,6 +5,10 @@ module.exports = {
       appName: process.env.BUBBLE_APP_NAME,
       apiVersion: '1.1',
       baseUrl: function() {
+        // If appName includes a dot, assume it's a custom domain
+        if (this.appName.includes('.')) {
+          return `https://${this.appName}/version-test/api/${this.apiVersion}`;
+        }
         return `https://${this.appName}.bubbleapps.io/api/${this.apiVersion}`;
       }
     },
