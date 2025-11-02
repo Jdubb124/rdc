@@ -38,7 +38,21 @@ class BubbleService {
       throw error;
     }
   }
-
+  
+// Fetch a single user by ID
+async fetchUserById(userId) {
+  try {
+    const response = await axios.get(
+      `${this.baseUrl}/obj/User/${userId}`,
+      { headers: this.headers }
+    );
+    
+    return response.data.response;
+  } catch (error) {
+    console.error(`Error fetching user ${userId}:`, error.message);
+    throw error;
+  }
+}
   // Fetch restaurants by neighborhood
   async fetchRestaurants(neighborhood = null) {
     try {
