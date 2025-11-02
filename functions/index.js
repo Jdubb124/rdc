@@ -91,8 +91,7 @@ exports.processUser = async (req, res) => {
   
   try {
     // Fetch user data
-    const userResponse = await bubbleService.fetchUsers(0, 1);
-    const user = userResponse.results[0];
+    const user = await bubbleService.fetchUserById(userId);
     
     // Fetch user's neighborhood restaurants
     const restaurants = await bubbleService.fetchRestaurants(user.neighborhood);

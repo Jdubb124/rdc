@@ -11,6 +11,26 @@ class BubbleService {
     };
   }
 
+
+  // Fetch a single user by ID
+async fetchUserById(userId) {
+  try {
+    const url = `${this.baseUrl}/obj/User/${userId}`;
+    console.log(`Fetching user: ${url}`);
+    
+    const response = await axios.get(url, { 
+      headers: this.headers 
+    });
+    
+    return response.data.response;
+  } catch (error) {
+    console.error(`Error fetching user ${userId}:`, error.message);
+    console.error('Status:', error.response?.status);
+    console.error('Response:', error.response?.data);
+    throw error;
+  }
+}
+
   // Fetch all users with pagination
   async fetchUsers(cursor = 0, limit = 100) {
     try {
@@ -38,21 +58,7 @@ class BubbleService {
       throw error;
     }
   }
-  
-// Fetch a single user by ID
-async fetchUserById(userId) {
-  try {
-    const response = await axios.get(
-      `${this.baseUrl}/obj/User/${userId}`,
-      { headers: this.headers }
-    );
-    
-    return response.data.response;
-  } catch (error) {
-    console.error(`Error fetching user ${userId}:`, error.message);
-    throw error;
-  }
-}
+
   // Fetch restaurants by neighborhood
   async fetchRestaurants(neighborhood = null) {
     try {
