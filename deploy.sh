@@ -11,7 +11,7 @@ export GCP_PROJECT_ID=$(cat .env | grep GCP_PROJECT_ID | cut -d '=' -f2)
 
 # Deploy the main matching function
 gcloud functions deploy runMonthlyMatching \
-  --runtime nodejs18 \
+  --runtime nodejs20 \
   --trigger-http \
   --entry-point runMonthlyMatching \
   --source ./functions \
@@ -22,7 +22,7 @@ gcloud functions deploy runMonthlyMatching \
 
 # Deploy the individual user processor (HTTP endpoint for Bubble.io)
 gcloud functions deploy processUser \
-  --runtime nodejs18 \
+  --runtime nodejs20 \
   --trigger-http \
   --entry-point processUser \
   --source ./functions \
@@ -33,7 +33,7 @@ gcloud functions deploy processUser \
 
 # Deploy the individual user processor (Pub/Sub trigger)
 gcloud functions deploy processUserPubSub \
-  --runtime nodejs18 \
+  --runtime nodejs20 \
   --trigger-topic user-matching \
   --entry-point processUserPubSub \
   --source ./functions \
@@ -43,7 +43,7 @@ gcloud functions deploy processUserPubSub \
 
 # Deploy health check
 gcloud functions deploy healthCheck \
-  --runtime nodejs18 \
+  --runtime nodejs20 \
   --trigger-http \
   --entry-point healthCheck \
   --source ./functions \

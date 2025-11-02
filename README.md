@@ -26,7 +26,7 @@ A serverless restaurant recommendation system built with Google Cloud Functions 
 
 - Google Cloud Project with billing enabled
 - Bubble.io application with API enabled
-- Node.js 18+ installed locally
+- Node.js 20+ installed locally
 - Google Cloud CLI installed
 
 ## Installation
@@ -75,7 +75,7 @@ chmod +x deploy.sh
 ```bash
 # Deploy main function
 gcloud functions deploy runMonthlyMatching \
-  --runtime nodejs18 \
+  --runtime nodejs20 \
   --trigger-http \
   --entry-point runMonthlyMatching \
   --source ./functions \
