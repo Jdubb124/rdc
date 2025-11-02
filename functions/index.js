@@ -90,8 +90,9 @@ exports.processUser = async (req, res) => {
   console.log(`Processing user: ${userId}`);
   
   try {
-    // Fetch user data by ID (FIXED!)
-    const user = await bubbleService.fetchUserById(userId);
+    // Fetch user data
+    const userResponse = await bubbleService.fetchUsers(0, 1);
+    const user = userResponse.results[0];
     
     // Fetch user's neighborhood restaurants
     const restaurants = await bubbleService.fetchRestaurants(user.neighborhood);
@@ -132,6 +133,7 @@ exports.processUser = async (req, res) => {
     });
   }
 };
+
 // Process user via Pub/Sub (legacy trigger)
 exports.processUserPubSub = async (message, context) => {
   const userId = message.data 
@@ -147,8 +149,7 @@ exports.processUserPubSub = async (message, context) => {
   
   try {
     // Fetch user data
-    const userResponse = await bubbleService.fetchUsers(0, 1);
-    const user = userResponse.results[0];
+    const user = await bubbleService.fetchUserById(userId);
     
     // Fetch user's neighborhood restaurants
     const restaurants = await bubbleService.fetchRestaurants(user.neighborhood);
