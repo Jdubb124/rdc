@@ -67,7 +67,7 @@ async fetchUserById(userId) {
         : [];
       
       const response = await axios.get(
-        `${this.baseUrl}/obj/Vendor`,
+        `${this.baseUrl}/obj/Vendors`,
         {
           headers: this.headers,
           params: {
